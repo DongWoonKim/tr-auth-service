@@ -21,6 +21,14 @@ public class CustomUserDetails implements UserDetails {
     private final String password;
     private final List<GrantedAuthority> authorities;
 
+    // 👇 role을 하나만 꺼내주는 헬퍼 메서드
+    public String getRole() {
+        return authorities.stream()
+                .findFirst()
+                .map(GrantedAuthority::getAuthority)
+                .orElse("ROLE_USER");
+    }
+
     public static CustomUserDetails from(User user) {
         return CustomUserDetails.builder()
                 .id(user.getId())

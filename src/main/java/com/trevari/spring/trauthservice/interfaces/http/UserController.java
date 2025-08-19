@@ -12,13 +12,13 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/auth")
+@RequestMapping("/api/users")
 public class UserController {
 
     private final UserService userService;
 
 
-    @PostMapping("/users")
+    @PostMapping
     public ResponseEntity<UserJoinResponseDTO> createUser(@RequestBody UserJoinRequestDTO req) {
         var res = userService.join(req);
         return ResponseEntity

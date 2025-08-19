@@ -1,5 +1,6 @@
 package com.trevari.spring.trauthservice.infrastructure.persistence;
 
+import com.trevari.spring.trauthservice.domain.user.Role;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -25,7 +26,8 @@ public class UserEntity {
     @Column(name = "user_name", nullable = false)
     private String userName;
 
-    @Column(nullable = false)
-    private String role;
+    @Enumerated(EnumType.STRING)
+    @Column(name = "role", nullable = false, length = 50)
+    private Role role;
 
 }

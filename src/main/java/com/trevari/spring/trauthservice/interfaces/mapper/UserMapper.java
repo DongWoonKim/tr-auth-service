@@ -1,6 +1,5 @@
 package com.trevari.spring.trauthservice.interfaces.mapper;
 
-import com.trevari.spring.trauthservice.domain.user.Role;
 import com.trevari.spring.trauthservice.domain.user.User;
 import com.trevari.spring.trauthservice.infrastructure.persistence.UserEntity;
 import org.springframework.stereotype.Component;
@@ -13,7 +12,7 @@ public class UserMapper {
                 .userId(u.getUserId())
                 .userName(u.getUserName())
                 .password(u.getPassword())
-                .role(u.getRole().name())
+                .role(u.getRole())
                 .build();
     }
 
@@ -22,7 +21,7 @@ public class UserMapper {
                 .userId(userEntity.getUserId())
                 .userName(userEntity.getUserName())
                 .password(userEntity.getPassword())
-                .role(Role.valueOf(userEntity.getRole()))
+                .role(userEntity.getRole())
                 .build();
     }
 

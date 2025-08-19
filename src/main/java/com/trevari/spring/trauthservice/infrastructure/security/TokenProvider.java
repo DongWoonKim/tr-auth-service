@@ -25,7 +25,7 @@ public class TokenProvider {
     private SecretKey secretKey;
 
     @PostConstruct
-    void init() {
+    public void init() {
         // props.getSecret() 이 이미 Base64 라면 decode, 아니면 bytes 그대로 사용
         byte[] keyBytes;
         try {
