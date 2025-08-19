@@ -2,3 +2,8 @@ spring:
   jpa:
     hibernate:
       ddl-auto: create-drop
+
+jwt:
+  issuer: test
+  # 32바이트 이상 키(Base64). 아래 값은 예시(HS512 OK)
+  secret: dGVzdGluZy10ZXN0aW5nLXRlc3RpbmctdGVzdGluZy10ZXN0aW5nLXRlc3Q=
