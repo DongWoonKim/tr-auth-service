@@ -96,21 +96,4 @@ public class AuthService {
         );
     }
 
-
-    private String getRefreshTokenFromCookies(Cookie[] cookies) {
-        // 요청에 쿠키가 있는지 확인
-        if (cookies != null) {
-            // 쿠키 배열에서 'refreshToken'이라는 이름의 쿠키를 찾아 반환
-            for (Cookie cookie : cookies) {
-                System.out.println(cookie.getName() + " ::: " + cookie.getValue());
-                if (cookie.getName().equals("refreshToken")) {
-                    return cookie.getValue(); // Refresh Token 값 반환
-                }
-            }
-        }
-
-        // 'refreshToken' 쿠키가 없으면 null 반환
-        return null;
-    }
-
 }

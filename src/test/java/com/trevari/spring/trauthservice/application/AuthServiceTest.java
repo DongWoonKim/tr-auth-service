@@ -5,6 +5,8 @@ import com.trevari.spring.trauthservice.infrastructure.security.JwtProperties;
 import com.trevari.spring.trauthservice.infrastructure.security.TokenProvider;
 import com.trevari.spring.trauthservice.interfaces.dto.AuthLoginRequestDTO;
 import com.trevari.spring.trauthservice.interfaces.dto.AuthLoginResponseDTO;
+import com.trevari.spring.trauthservice.interfaces.dto.ReissueTokenResponseDTO;
+import com.trevari.spring.trauthservice.interfaces.dto.ValidTokenResponseDTO;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -17,6 +19,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.security.SecureRandom;
+import java.time.Duration;
 import java.util.Base64;
 import java.util.List;
 
@@ -32,6 +35,8 @@ class AuthServiceTest {
     private final String USER_ID = "hong";
     private final String RAW_PW = "1234";
     private final Long   USER_DB_ID = 1L;
+    private final String ROLE = "ROLE_USER";
+    private final String USER_NAME = "홍길동";
 
 
     @BeforeEach
@@ -67,6 +72,7 @@ class AuthServiceTest {
         // 5) 테스트 대상 서비스
         this.authService = new AuthService(authenticationManager, tokenProvider);
     }
+
 
     @Test
     void 로그인_성공시_success와_AT_RT발급() {
@@ -106,6 +112,87 @@ class AuthServiceTest {
         assertThat(res.message()).contains("아이디 또는 비밀번호");
         assertThat(res.accessToken()).isNull();
         assertThat(res.refreshToken()).isNull();
+    }
+
+    @Test
+    void 재발급_실패_형식오류토큰_INVALID() {
+        String invalid = "not-a-jwt-token";
+
+        ReissueTokenResponseDTO res = authService.reissueTokens(invalid);
+
+        assertThat(res).isNotNull();
+        assertThat(res.success()).isFalse();
+        assertThat(res.statusNum()).isEqualTo(-1);
+    }
+
+    @Test
+    void 재발급_실패_만료토큰_EXPIRED() {
+        // 과거 만료(음수 TTL)로 만든 RT
+        String expiredRt = tokenProvider.generateToken(USER_ID, USER_DB_ID, ROLE, USER_NAME, Duration.ofSeconds(-30));
+
+        ReissueTokenResponseDTO res = authService.reissueTokens(expiredRt);
+
+        assertThat(res).isNotNull();
+        assertThat(res.success()).isFalse();
+        assertThat(res.statusNum()).isEqualTo(-1);
+    }
+
+    @Test
+    void 재발급_성공_VALID() {
+        // 유효한 RT 생성
+        String rt = tokenProvider.generateToken(USER_ID, USER_DB_ID, ROLE, USER_NAME, Duration.ofDays(2));
+
+        ReissueTokenResponseDTO res = authService.reissueTokens(rt);
+
+        // 성공 여부
+        assertThat(res).isNotNull();
+        assertThat(res.success()).isTrue();
+        assertThat(res.accessToken()).isNotBlank();
+        assertThat(res.refreshToken()).isNotBlank();
+
+        // 새로 받은 AT/RT 모두 VALID
+        assertThat(tokenProvider.validate(res.accessToken())).isEqualTo(TokenProvider.TokenStatus.VALID);
+        assertThat(tokenProvider.validate(res.refreshToken())).isEqualTo(TokenProvider.TokenStatus.VALID);
+
+        // 클레임 유지 확인
+        TokenProvider.TokenClaims atClaims = tokenProvider.parse(res.accessToken());
+        TokenProvider.TokenClaims rtClaims = tokenProvider.parse(res.refreshToken());
+
+        assertThat(atClaims.userId()).isEqualTo(USER_ID);
+        assertThat(atClaims.id()).isEqualTo(USER_DB_ID);
+        assertThat(atClaims.role()).isEqualTo(ROLE);
+        assertThat(atClaims.userName()).isEqualTo(USER_NAME);
+
+        assertThat(rtClaims.userId()).isEqualTo(USER_ID);
+        assertThat(rtClaims.id()).isEqualTo(USER_DB_ID);
+        assertThat(rtClaims.role()).isEqualTo(ROLE);
+        assertThat(rtClaims.userName()).isEqualTo(USER_NAME);
+    }
+
+    // ---------------------------
+    // validToken() 테스트
+    // ---------------------------
+
+    @Test
+    void 토큰검증_VALID() {
+        String at = tokenProvider.generateToken(USER_ID, USER_DB_ID, ROLE, USER_NAME, Duration.ofMinutes(10));
+        ValidTokenResponseDTO res = authService.validToken(at);
+        assertThat(res).isNotNull();
+        assertThat(res.statusNum()).isEqualTo(TokenProvider.TokenStatus.VALID);
+    }
+
+    @Test
+    void 토큰검증_EXPIRED() {
+        String expired = tokenProvider.generateToken(USER_ID, USER_DB_ID, ROLE, USER_NAME, Duration.ofSeconds(-1));
+        ValidTokenResponseDTO res = authService.validToken(expired);
+        assertThat(res.statusNum()).isEqualTo(TokenProvider.TokenStatus.EXPIRED);
+    }
+
+    @Test
+    void 토큰검증_INVALID() {
+        String invalid = "!!!broken.token.value!!!";
+        ValidTokenResponseDTO res = authService.validToken(invalid);
+        assertThat(res.statusNum()).isEqualTo(TokenProvider.TokenStatus.INVALID);
     }
 
     // === 유틸: 안전한 Base64 시크릿 생성 ===
