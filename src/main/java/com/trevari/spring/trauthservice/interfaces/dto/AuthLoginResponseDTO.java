@@ -3,7 +3,7 @@ package com.trevari.spring.trauthservice.interfaces.dto;
 import lombok.Builder;
 
 @Builder
-public record UserLoginResponseDTO(
+public record AuthLoginResponseDTO(
         boolean success,
         String userName,
         String userId,
@@ -12,13 +12,13 @@ public record UserLoginResponseDTO(
         String message
 ) {
     // 로그인 성공 시
-    public static UserLoginResponseDTO success(
+    public static AuthLoginResponseDTO success(
             String userId,
             String userName,
             String accessToken,
             String refreshToken
     ) {
-        return UserLoginResponseDTO.builder()
+        return AuthLoginResponseDTO.builder()
                 .success(true)
                 .userId(userId)
                 .userName(userName)
@@ -28,10 +28,20 @@ public record UserLoginResponseDTO(
     }
 
     // 로그인 실패 시
-    public static UserLoginResponseDTO failure(String message) {
-        return UserLoginResponseDTO.builder()
+    public static AuthLoginResponseDTO failure(String message) {
+        return AuthLoginResponseDTO.builder()
                 .success(false)
                 .message(message)
+                .build();
+    }
+
+    // refresh null 처리
+    public AuthLoginResponseDTO withoutRefreshToken() {
+        return AuthLoginResponseDTO.builder()
+                .success(success)
+                .userId(userId)
+                .userName(userName)
+                .accessToken(accessToken)
                 .build();
     }
 }

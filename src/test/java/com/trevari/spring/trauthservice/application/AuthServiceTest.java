@@ -3,8 +3,8 @@ package com.trevari.spring.trauthservice.application;
 import com.trevari.spring.trauthservice.infrastructure.security.CustomUserDetails;
 import com.trevari.spring.trauthservice.infrastructure.security.JwtProperties;
 import com.trevari.spring.trauthservice.infrastructure.security.TokenProvider;
-import com.trevari.spring.trauthservice.interfaces.dto.UserLoginRequestDTO;
-import com.trevari.spring.trauthservice.interfaces.dto.UserLoginResponseDTO;
+import com.trevari.spring.trauthservice.interfaces.dto.AuthLoginRequestDTO;
+import com.trevari.spring.trauthservice.interfaces.dto.AuthLoginResponseDTO;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -71,10 +71,10 @@ class AuthServiceTest {
     @Test
     void 로그인_성공시_success와_AT_RT발급() {
         // given
-        UserLoginRequestDTO req = new UserLoginRequestDTO(USER_ID, RAW_PW);
+        AuthLoginRequestDTO req = new AuthLoginRequestDTO(USER_ID, RAW_PW);
 
         // when
-        UserLoginResponseDTO res = authService.login(req);
+        AuthLoginResponseDTO res = authService.login(req);
 
         // then
         assertThat(res.success()).isTrue();
@@ -96,10 +96,10 @@ class AuthServiceTest {
     @Test
     void 로그인_실패시_failure와_토큰_null() {
         // given
-        UserLoginRequestDTO wrong = new UserLoginRequestDTO(USER_ID, "bad-password");
+        AuthLoginRequestDTO wrong = new AuthLoginRequestDTO(USER_ID, "bad-password");
 
         // when
-        UserLoginResponseDTO res = authService.login(wrong);
+        AuthLoginResponseDTO res = authService.login(wrong);
 
         // then
         assertThat(res.success()).isFalse();
