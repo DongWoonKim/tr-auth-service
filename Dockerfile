@@ -24,6 +24,6 @@ COPY --from=build /app/build/libs/*.jar /app/app.jar
 
 # JVM 옵션
 ENV JAVA_OPTS="-XX:MaxRAMPercentage=75.0"
-EXPOSE 9003
+EXPOSE 9001
 
 ENTRYPOINT ["sh", "-c", "java $JAVA_OPTS -jar /app/app.jar"]

@@ -3,6 +3,7 @@ package com.trevari.spring.trauthservice.interfaces.http;
 import com.trevari.spring.trauthservice.application.AuthService;
 import com.trevari.spring.trauthservice.interfaces.dto.*;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -10,6 +11,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+@Slf4j
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/auth")
@@ -19,6 +21,8 @@ public class AuthController {
 
     @PostMapping("/sessions")
     public ResponseEntity<AuthLoginResponseDTO> login(@RequestBody AuthLoginRequestDTO req) {
+        log.info("/api/auth/sessions");
+
         AuthLoginResponseDTO res = authService.login(req);
 
         return res != null && res.success()
@@ -31,6 +35,8 @@ public class AuthController {
     //	•	POST /api/auth/tokens (재발급)
     @PostMapping("/tokens")
     public ResponseEntity<ReissueTokenResponseDTO> reissueToken(@RequestBody ReissueTokenRequestDTO req) {
+        log.info("/api/auth/tokens");
+
         ReissueTokenResponseDTO res = authService.reissueTokens(req.refreshToken());
 
         // 성공(유효 RT) → 200 OK + 새 AT/RT 본문 반환
@@ -43,6 +49,8 @@ public class AuthController {
     //	•	POST /api/auth/tokens/validate (검증)
     @PostMapping("/tokens/validate")
     public ResponseEntity<Integer> validateToken(@RequestBody ValidTokenRequestDTO req) {
+        log.info("/api/auth/tokens/validate");
+
         var res = authService.validToken(req.token());
 
         if (res == null) {
