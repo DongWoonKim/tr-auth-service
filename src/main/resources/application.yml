@@ -24,5 +24,5 @@ springdoc:
     path: /v3/api-docs
 
 jwt:
-  issuer: ${jwt.issuer}
-  secret: ${jwt.secret}
+  issuer: ${JWT_ISSUER}
+  secret: ${JWT_SECRET}
