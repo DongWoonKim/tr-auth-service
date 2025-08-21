@@ -34,7 +34,7 @@ public class AuthService {
 
             CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
 
-            String accessToken = createToken(userDetails, Duration.ofSeconds(20));
+            String accessToken = createToken(userDetails, Duration.ofHours(20));
             String refreshToken = createToken(userDetails, Duration.ofDays(2));
 
             return AuthLoginResponseDTO.success(

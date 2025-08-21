@@ -2,6 +2,8 @@ package com.trevari.spring.trauthservice.interfaces.http;
 
 import com.trevari.spring.trauthservice.application.AuthService;
 import com.trevari.spring.trauthservice.interfaces.dto.*;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -15,11 +17,13 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/auth")
+@Tag(name = "Auth", description = "인증 API")
 public class AuthController {
 
     private final AuthService authService;
 
     @PostMapping("/sessions")
+    @Operation(summary = "로그인", description = "사용자 로그인 후 토큰 발급")
     public ResponseEntity<AuthLoginResponseDTO> login(@RequestBody AuthLoginRequestDTO req) {
         log.info("/api/auth/sessions");
 
@@ -34,6 +38,7 @@ public class AuthController {
 
     //	•	POST /api/auth/tokens (재발급)
     @PostMapping("/tokens")
+    @Operation(summary = "토큰 재발급", description = "Refresh Token으로 Access/Refresh 토큰 재발급")
     public ResponseEntity<ReissueTokenResponseDTO> reissueToken(@RequestBody ReissueTokenRequestDTO req) {
         log.info("/api/auth/tokens");
 
@@ -48,6 +53,7 @@ public class AuthController {
 
     //	•	POST /api/auth/tokens/validate (검증)
     @PostMapping("/tokens/validate")
+    @Operation(summary = "토큰 유효성 검증", description = "Access Token의 유효성 검증 (1: 유효, 2: 만료, -1: 서버 오류)")
     public ResponseEntity<Integer> validateToken(@RequestBody ValidTokenRequestDTO req) {
         log.info("/api/auth/tokens/validate");
 
@@ -59,7 +65,7 @@ public class AuthController {
 
         return switch (res.statusNum()) {
             case VALID -> ResponseEntity.ok(1);   // 유효
-            case EXPIRED, INVALID -> ResponseEntity.ok(2); // 무효
+            case EXPIRED, INVALID -> ResponseEntity.ok(2); // 만료
             default -> ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(-1);
         };
     }
