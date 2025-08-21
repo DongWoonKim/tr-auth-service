@@ -19,6 +19,12 @@ public class SecurityConfig {
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(
                         authorize -> authorize
+                                // Swagger / springdoc 허용
+                                .requestMatchers(
+                                        "/v3/api-docs/**",
+                                        "/swagger-ui/**",
+                                        "/swagger-ui.html"
+                                ).permitAll()
                                 .requestMatchers(HttpMethod.POST, "/api/users").permitAll() // 회원가입만 허용
                                 .requestMatchers("/api/auth/**").permitAll()                // 로그인/토큰 관련 허용
                                 .anyRequest().authenticated()
