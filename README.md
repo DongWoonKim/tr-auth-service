@@ -1,6 +1,6 @@
 ## 🔑 tr-auth-service (인증 서비스)
 
-`tr-auth-service`는 **사용자 인증(Auth)**을 담당하는 서비스로,  
+`tr-auth-service`는 **사용자 인증(Auth)** 을 담당하는 서비스로,  
 회원가입, 로그인, 토큰 발급 및 검증과 같은 핵심 인증 기능을 제공합니다.  
 
 이 서비스는 사용자 관리 및 인증의 **중앙 진입점(Central Authority)** 역할을 하며,  
@@ -84,7 +84,7 @@ com.trevari.auth
   - 비즈니스 로직은 이 순수 도메인 모델에 의존하도록 설계되어, 외부 기술이나 환경 변화로부터 영향을 최소화합니다.
 
 - **infrastructure/persistence** : DB와 직접 맞닿는 영역으로, 도메인 모델과 영속성 기술(JPA 등)을 연결합니다.  
-  - `UserRepositoryAdapter` : domain 계층의 **UserRepository 인터페이스(포트)**를 구현한 어댑터입니다.  
+  - `UserRepositoryAdapter` : domain 계층의 **UserRepository 인터페이스(포트)** 를 구현한 어댑터입니다.  
     내부적으로 `UserJpaRepository`를 사용하지만, 도메인 계층은 오직 `UserRepository` 인터페이스만 바라봅니다.  
     -> 덕분에 JPA가 아닌 다른 기술(MyBatis, MongoDB 등)로 교체해도 도메인 로직은 수정할 필요가 없습니다.  
 
